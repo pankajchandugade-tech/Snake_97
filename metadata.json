@@ -1,0 +1,6 @@
+{
+  "name": "Retro Snake",
+  "description": "Authentic classic Nokia Snake game with retro LCD dot-matrix display, nostalgic phone keypad, sound effects, customizable mazes, and responsive HTML5 web support for mobile browsers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

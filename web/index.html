@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Nokia Snake '97 - Classic Mobile Game</title>
+  <meta name="description" content="Authentic Nokia Snake II retro mobile phone game with classic LCD dot-matrix screen, 8-bit sound effects, and phone keypad.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#101418">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Top Retro Header Bar -->
+    <header class="retro-header">
+      <div class="brand-title">
+        <span>🐍</span>
+        <span>NOKIA '97</span>
+      </div>
+      <div class="header-actions">
+        <!-- Direct Reactive Speed Toggle in Header -->
+        <button id="quick-speed-btn" class="icon-btn speed-badge-btn" title="Click to cycle speed (1-9)">
+          <span>⚡ SPD:</span>
+          <b id="quick-speed-val">4</b>
+        </button>
+
+        <button id="view-mode-toggle" class="icon-btn" title="Toggle Phone Frame / Arcade Mode">
+          <span id="view-mode-icon">📱</span>
+          <span id="view-mode-text">Arcade</span>
+        </button>
+        <button id="sound-toggle" class="icon-btn" title="Toggle Sound">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <button id="settings-btn" class="icon-btn" title="Settings & Mazes">
+          <span>⚙️</span>
+        </button>
+        <button id="info-btn" class="icon-btn" title="Help & Guide">
+          <span>❓</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Nokia 3310 Phone Chassis -->
+    <main class="nokia-chassis" id="phone-chassis">
+      <!-- Phone Speaker -->
+      <div class="nokia-earpiece"></div>
+
+      <!-- Nokia Brand Logo -->
+      <div class="nokia-brand">NOKIA</div>
+
+      <!-- Screen Bezel Housing -->
+      <div class="screen-housing">
+        <div class="lcd-display">
+          <!-- LCD Top Status Bar with Clickable Speed -->
+          <div class="lcd-status-bar">
+            <div class="status-left">
+              <span>SCORE:<b id="score-display">0</b></span>
+            </div>
+            <div class="status-center">
+              <button id="lcd-speed-btn" class="lcd-text-btn" title="Tap to cycle speed">
+                SPD:<b id="lcd-speed-val">4</b>
+              </button>
+            </div>
+            <div class="status-right">
+              <span>HI:<b id="high-score-display">0</b></span>
+              <span id="lcd-sound-ind">♪</span>
+            </div>
+          </div>
+
+          <!-- Bonus Beetle Progress Bar -->
+          <div class="bonus-progress-bar" id="bonus-meter">
+            <div class="bonus-progress-fill" id="bonus-meter-fill"></div>
+          </div>
+
+          <!-- Pixel Dot-Matrix Canvas -->
+          <canvas id="snake-canvas" width="360" height="240"></canvas>
+        </div>
+      </div>
+
+      <!-- Dedicated Instant Reactive Speed Bar on Phone Face -->
+      <div class="quick-speed-bar">
+        <button class="speed-step-btn" id="speed-down-btn" title="Slower speed">◀</button>
+        <div class="speed-pills" id="speed-indicator-pills">
+          <button class="speed-pill-btn" data-speed="1">1</button>
+          <button class="speed-pill-btn" data-speed="2">2</button>
+          <button class="speed-pill-btn" data-speed="3">3</button>
+          <button class="speed-pill-btn" data-speed="4">4</button>
+          <button class="speed-pill-btn" data-speed="5">5</button>
+          <button class="speed-pill-btn" data-speed="6">6</button>
+          <button class="speed-pill-btn" data-speed="7">7</button>
+          <button class="speed-pill-btn" data-speed="8">8</button>
+          <button class="speed-pill-btn" data-speed="9">9</button>
+        </div>
+        <button class="speed-step-btn" id="speed-up-btn" title="Faster speed">▶</button>
+      </div>
+
+      <!-- Classic Keypad -->
+      <section class="keypad-container">
+        <!-- Upper Navigation Cluster -->
+        <div class="nav-cluster">
+          <button class="soft-btn" id="btn-soft-left">
+            <span>MENU</span>
+          </button>
+          <button class="navi-btn" id="btn-navi" title="Select / Pause">
+            <span style="font-size: 10px;">▲</span>
+            <span>NAVI</span>
+            <span style="font-size: 10px;">▼</span>
+          </button>
+          <button class="soft-btn" id="btn-soft-right">
+            <span>C</span>
+          </button>
+        </div>
+
+        <!-- 3x4 Numeric Keypad with Clear Directional Labels -->
+        <div class="num-grid">
+          <button class="nokia-key" data-key="1">
+            <span class="key-primary">1</span>
+            <span class="key-sub">.,'</span>
+          </button>
+          <button class="nokia-key key-active-dir" data-key="2" id="key-2">
+            <span class="key-primary">2 ▲</span>
+            <span class="key-sub">UP</span>
+          </button>
+          <button class="nokia-key" data-key="3">
+            <span class="key-primary">3</span>
+            <span class="key-sub">def</span>
+          </button>
+
+          <button class="nokia-key key-active-dir" data-key="4" id="key-4">
+            <span class="key-primary">4 ◀</span>
+            <span class="key-sub">LEFT</span>
+          </button>
+          <button class="nokia-key key-active-dir" data-key="5" id="key-5">
+            <span class="key-primary">5 ★</span>
+            <span class="key-sub">OK</span>
+          </button>
+          <button class="nokia-key key-active-dir" data-key="6" id="key-6">
+            <span class="key-primary">6 ▶</span>
+            <span class="key-sub">RIGHT</span>
+          </button>
+
+          <button class="nokia-key" data-key="7">
+            <span class="key-primary">7</span>
+            <span class="key-sub">pqrs</span>
+          </button>
+          <button class="nokia-key key-active-dir" data-key="8" id="key-8">
+            <span class="key-primary">8 ▼</span>
+            <span class="key-sub">DOWN</span>
+          </button>
+          <button class="nokia-key" data-key="9">
+            <span class="key-primary">9</span>
+            <span class="key-sub">wxyz</span>
+          </button>
+
+          <button class="nokia-key" data-key="*">
+            <span class="key-primary">*</span>
+            <span class="key-sub">+</span>
+          </button>
+          <button class="nokia-key" data-key="0">
+            <span class="key-primary">0</span>
+            <span class="key-sub">_</span>
+          </button>
+          <button class="nokia-key" data-key="#">
+            <span class="key-primary">#</span>
+            <span class="key-sub">↑</span>
+          </button>
+        </div>
+
+        <!-- Touch D-Pad for Arcade Mode -->
+        <div class="arcade-controls">
+          <div class="dpad">
+            <button class="dpad-btn dpad-up" id="dpad-up">▲</button>
+            <button class="dpad-btn dpad-left" id="dpad-left">◀</button>
+            <button class="dpad-btn dpad-center" id="dpad-center">PAUSE</button>
+            <button class="dpad-btn dpad-right" id="dpad-right">▶</button>
+            <button class="dpad-btn dpad-down" id="dpad-down">▼</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">GAME SETTINGS</div>
+          <button class="close-btn" id="close-settings">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-group">
+            <div class="setting-label">SELECT MAZE</div>
+            <div class="pill-row" id="maze-options">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label">SPEED LEVEL (1 = Slow, 9 = Turbo)</div>
+            <div class="pill-row" id="speed-options">
+              <!-- Dynamically populated 1 to 9 -->
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label">LCD SCREEN BACKLIGHT</div>
+            <div class="pill-row" id="theme-options">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-label">HIGH SCORES LEADERBOARD</div>
+            <div id="modal-high-scores">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help & Guide Modal -->
+    <div class="modal-overlay" id="info-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">NOKIA SNAKE GUIDE</div>
+          <button class="close-btn" id="close-info">✕</button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <b>🎮 Controls & High Reactivity:</b>
+            <p>• <b>Speed:</b> Click the <b>⚡ SPD</b> button or pills <b>1 to 9</b> anytime to adjust speed instantly!</p>
+            <p>• <b>Keypad:</b> 2 (Up), 8 (Down), 4 (Left), 6 (Right), 5 / NAVI (Start/Pause).</p>
+            <p>• <b>Touch:</b> Swipe anywhere across the LCD screen or tap the menu options directly.</p>
+            <p>• <b>Keyboard:</b> Arrow keys, WASD, Number keys, Space to Pause.</p>
+          </div>
+
+          <div>
+            <b>🍎 iPhone & Android Web Browser:</b>
+            <p>On iPhone Safari, tap <b>Share ⎋ → "Add to Home Screen"</b> to play full-screen offline like an installable app!</p>
+          </div>
+
+          <div>
+            <b>🐛 Rules & Bonus Beetles:</b>
+            <p>• Eat normal pixel dots to grow and score points.</p>
+            <p>• Every 5 foods eaten, a bonus beetle appears with a countdown timer. Catch it quickly before it vanishes for up to 200 extra points!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script src="snake.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('snake-canvas');
+      const scoreDisplay = document.getElementById('score-display');
+      const highScoreDisplay = document.getElementById('high-score-display');
+      const bonusMeter = document.getElementById('bonus-meter');
+      const bonusMeterFill = document.getElementById('bonus-meter-fill');
+      const highScoresList = document.getElementById('modal-high-scores');
+      const quickSpeedVal = document.getElementById('quick-speed-val');
+      const lcdSpeedVal = document.getElementById('lcd-speed-val');
+
+      const viewModeToggle = document.getElementById('view-mode-toggle');
+      const viewModeIcon = document.getElementById('view-mode-icon');
+      const viewModeText = document.getElementById('view-mode-text');
+      const soundToggle = document.getElementById('sound-toggle');
+      const soundIcon = document.getElementById('sound-icon');
+      const lcdSoundInd = document.getElementById('lcd-sound-ind');
+
+      // Modals
+      const settingsModal = document.getElementById('settings-modal');
+      const settingsBtn = document.getElementById('settings-btn');
+      const closeSettings = document.getElementById('close-settings');
+      const infoModal = document.getElementById('info-modal');
+      const infoBtn = document.getElementById('info-btn');
+      const closeInfo = document.getElementById('close-info');
+
+      // Helper for fast, zero-delay button interactions (0ms response)
+      function bindFastAction(el, handler) {
+        if (!el) return;
+        let triggered = false;
+
+        const execute = (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          handler();
+        };
+
+        el.addEventListener('pointerdown', (e) => {
+          triggered = true;
+          execute(e);
+        });
+
+        el.addEventListener('click', (e) => {
+          if (!triggered) {
+            execute(e);
+          }
+          triggered = false;
+        });
+      }
+
+      // Initialize Snake Engine
+      const game = new window.NokiaSnakeGame(canvas, {
+        scoreDisplay,
+        highScoreDisplay,
+        bonusMeter,
+        bonusMeterFill,
+        highScoresList,
+        quickSpeedVal,
+        lcdSpeedVal,
+        openScoresModal: () => {
+          settingsModal.style.display = 'flex';
+        }
+      });
+
+      // --- SPEED CONTROLS (ULTRA REACTIVE) ---
+      // 1. Header speed badge (click cycles 1 to 9)
+      bindFastAction(document.getElementById('quick-speed-btn'), () => {
+        game.cycleSpeed();
+      });
+
+      // 2. LCD status bar speed button (tap cycles 1 to 9)
+      bindFastAction(document.getElementById('lcd-speed-btn'), () => {
+        game.cycleSpeed();
+      });
+
+      // 3. Decrement speed button (◀)
+      bindFastAction(document.getElementById('speed-down-btn'), () => {
+        const nextSpeed = game.speedLevel > 1 ? game.speedLevel - 1 : 9;
+        game.setSpeed(nextSpeed);
+      });
+
+      // 4. Increment speed button (▶)
+      bindFastAction(document.getElementById('speed-up-btn'), () => {
+        const nextSpeed = game.speedLevel < 9 ? game.speedLevel + 1 : 1;
+        game.setSpeed(nextSpeed);
+      });
+
+      // 5. Individual speed pills on phone face (1 to 9)
+      document.querySelectorAll('.speed-pill-btn').forEach(btn => {
+        const speedVal = parseInt(btn.getAttribute('data-speed'), 10);
+        bindFastAction(btn, () => {
+          game.setSpeed(speedVal);
+        });
+      });
+
+      // Populate Settings Modal: Speeds 1 to 9
+      const speedOptions = document.getElementById('speed-options');
+      for (let s = 1; s <= 9; s++) {
+        const btn = document.createElement('button');
+        btn.className = `pill-btn ${s === game.speedLevel ? 'active' : ''}`;
+        btn.setAttribute('data-speed', s.toString());
+        btn.textContent = s.toString();
+        bindFastAction(btn, () => {
+          game.setSpeed(s);
+        });
+        speedOptions.appendChild(btn);
+      }
+
+      // Populate Settings Modal: Mazes
+      const mazeOptions = document.getElementById('maze-options');
+      window.NOKIA_MAZES.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = `pill-btn ${m.id === game.currentMazeId ? 'active' : ''}`;
+        btn.textContent = m.name;
+        bindFastAction(btn, () => {
+          game.setMaze(m.id);
+          document.querySelectorAll('#maze-options .pill-btn').forEach((b, i) => {
+            b.classList.toggle('active', i === m.id);
+          });
+        });
+        mazeOptions.appendChild(btn);
+      });
+
+      // Populate Settings Modal: Themes
+      const themeOptions = document.getElementById('theme-options');
+      Object.entries(window.NOKIA_THEMES).forEach(([key, th]) => {
+        const btn = document.createElement('button');
+        btn.className = `pill-btn ${key === game.currentThemeKey ? 'active' : ''}`;
+        btn.textContent = th.name;
+        bindFastAction(btn, () => {
+          game.setTheme(key);
+          document.querySelectorAll('#theme-options .pill-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+        themeOptions.appendChild(btn);
+      });
+
+      // Modals Open/Close
+      bindFastAction(settingsBtn, () => {
+        window.NokiaSound.click();
+        settingsModal.style.display = 'flex';
+      });
+      bindFastAction(closeSettings, () => {
+        window.NokiaSound.click();
+        settingsModal.style.display = 'none';
+      });
+      bindFastAction(infoBtn, () => {
+        window.NokiaSound.click();
+        infoModal.style.display = 'flex';
+      });
+      bindFastAction(closeInfo, () => {
+        window.NokiaSound.click();
+        infoModal.style.display = 'none';
+      });
+
+      // Sound Toggle
+      bindFastAction(soundToggle, () => {
+        const isMuted = window.NokiaSound.toggleMute();
+        soundIcon.textContent = isMuted ? '🔇' : '🔊';
+        lcdSoundInd.style.opacity = isMuted ? '0.2' : '1';
+        if (!isMuted) window.NokiaSound.click();
+      });
+
+      // View Mode Toggle (Phone Frame vs Arcade Fullscreen)
+      let isArcadeMode = false;
+      bindFastAction(viewModeToggle, () => {
+        window.NokiaSound.click();
+        isArcadeMode = !isArcadeMode;
+        document.body.classList.toggle('arcade-mode', isArcadeMode);
+        viewModeIcon.textContent = isArcadeMode ? '🎮' : '📱';
+        viewModeText.textContent = isArcadeMode ? 'Phone' : 'Arcade';
+        game.initDisplay();
+        game.draw();
+      });
+
+      // Directional Controls
+      bindFastAction(document.getElementById('key-2'), () => game.setDirection(0, -1));
+      bindFastAction(document.getElementById('key-8'), () => game.setDirection(0, 1));
+      bindFastAction(document.getElementById('key-4'), () => game.setDirection(-1, 0));
+      bindFastAction(document.getElementById('key-6'), () => game.setDirection(1, 0));
+
+      const handleConfirmOrPause = () => {
+        if (game.state === 'MENU') {
+          game.handleMenuSelect();
+        } else if (game.state === 'GAMEOVER') {
+          game.startNewGame();
+        } else {
+          game.togglePause();
+        }
+      };
+
+      bindFastAction(document.getElementById('key-5'), handleConfirmOrPause);
+      bindFastAction(document.getElementById('btn-navi'), handleConfirmOrPause);
+
+      bindFastAction(document.getElementById('btn-soft-left'), () => {
+        window.NokiaSound.click();
+        if (game.state === 'MENU') {
+          game.handleMenuSelect();
+        } else if (game.state === 'GAMEOVER') {
+          game.startNewGame();
+        } else {
+          settingsModal.style.display = 'flex';
+        }
+      });
+
+      bindFastAction(document.getElementById('btn-soft-right'), () => {
+        window.NokiaSound.click();
+        if (game.state === 'PLAYING') {
+          game.togglePause();
+        } else {
+          game.state = 'MENU';
+          game.draw();
+        }
+      });
+
+      // Other numeric keys give authentic audio click
+      document.querySelectorAll('.nokia-key').forEach(k => {
+        const val = k.getAttribute('data-key');
+        if (!['2', '4', '5', '6', '8'].includes(val)) {
+          bindFastAction(k, () => window.NokiaSound.click());
+        }
+      });
+
+      // Arcade D-Pad Handlers
+      bindFastAction(document.getElementById('dpad-up'), () => game.setDirection(0, -1));
+      bindFastAction(document.getElementById('dpad-down'), () => game.setDirection(0, 1));
+      bindFastAction(document.getElementById('dpad-left'), () => game.setDirection(-1, 0));
+      bindFastAction(document.getElementById('dpad-right'), () => game.setDirection(1, 0));
+      bindFastAction(document.getElementById('dpad-center'), handleConfirmOrPause);
+
+      // Initial theme and speed sync
+      game.setTheme(game.currentThemeKey);
+      game.syncSpeedUI();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "Nokia Snake '97",
+  "short_name": "Snake '97",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#12161A",
+  "theme_color": "#12161A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
